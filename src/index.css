@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', 'Segoe UI Variable Text', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-zinc-50 text-zinc-900 antialiased;
+  }
+  [class^='ri-'],
+  [class*=' ri-'] {
+    line-height: 1;
+  }
+}
+
+@layer components {
+  .input {
+    @apply h-9 w-full rounded-md border border-zinc-200 bg-white px-3 text-base sm:text-sm text-zinc-900 transition outline-none placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-4 focus:ring-zinc-900/5;
+  }
+  .icon-btn {
+    @apply grid size-8 shrink-0 place-items-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900;
+  }
+  .btn {
+    @apply inline-flex h-9 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50;
+  }
+  .btn-primary {
+    @apply inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md bg-zinc-900 px-3 text-sm font-medium text-white transition hover:bg-zinc-800 active:scale-[0.98];
+  }
+  .kbd {
+    @apply inline-block rounded border border-zinc-200 bg-white px-1.5 font-sans text-[11px] leading-[18px] text-zinc-400;
+  }
+  .kbd-dark {
+    @apply rounded bg-white/15 px-1.5 font-sans text-[11px] leading-[18px] text-zinc-300;
+  }
+}
