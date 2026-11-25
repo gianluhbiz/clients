@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { useMatch, useNavigate } from 'react-router'
 import { ClientForm } from './components/ClientForm'
 import { ClientRow } from './components/ClientRow'
+import { Logo } from './components/Logo'
 import { Menu } from './components/Menu'
 import { Dot } from './components/Status'
 import { STATUS, STATUS_ORDER } from './lib/meta'
@@ -139,9 +140,7 @@ export default function Home() {
       <header className="sticky top-0 z-10 border-b border-zinc-200/70 bg-zinc-50/85 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3 sm:gap-3">
           <div className="flex shrink-0 items-center gap-2 font-semibold">
-            <span className="grid size-8 place-items-center rounded-lg bg-zinc-900 text-white">
-              <i className="ri-contacts-book-3-line" />
-            </span>
+            <Logo className="size-8 rounded-lg shadow-sm shadow-zinc-900/20" />
             <span className="hidden sm:inline">Clienti</span>
           </div>
           <div className="relative flex-1">

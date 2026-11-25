@@ -1,0 +1,20 @@
+/** Logo: una mini lista clienti con i pallini di stato (nuovo, in attesa, chiuso) */
+export function Logo({ className = 'size-8' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={`shrink-0 ${className}`} aria-hidden="true">
+      <defs>
+        <linearGradient id="logo-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#3f3f46" />
+          <stop offset="1" stopColor="#09090b" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="8" fill="url(#logo-bg)" />
+      <circle cx="10" cy="10" r="2.5" fill="#0ea5e9" />
+      <rect x="15" y="8.75" width="9" height="2.5" rx="1.25" fill="#fafafa" fillOpacity=".9" />
+      <circle cx="10" cy="16" r="2.5" fill="#f59e0b" />
+      <rect x="15" y="14.75" width="7" height="2.5" rx="1.25" fill="#fafafa" fillOpacity=".6" />
+      <circle cx="10" cy="22" r="2.5" fill="#10b981" />
+      <rect x="15" y="20.75" width="8" height="2.5" rx="1.25" fill="#fafafa" fillOpacity=".35" />
+    </svg>
+  )
+}

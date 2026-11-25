@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Logo } from './components/Logo'
 import { supabase } from './lib/supabase'
 
 export default function Login() {
@@ -26,9 +27,7 @@ export default function Login() {
     <div className="grid min-h-dvh place-items-center px-4">
       <form onSubmit={submit} className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <span className="grid size-11 place-items-center rounded-xl bg-zinc-900 text-lg text-white">
-            <i className="ri-contacts-book-3-line" />
-          </span>
+          <Logo className="size-12 rounded-xl shadow-md shadow-zinc-900/20" />
           <h1 className="mt-4 text-xl font-semibold">Clienti</h1>
           <p className="mt-1 text-sm text-zinc-500">Accedi per vedere i tuoi clienti.</p>
         </div>
