@@ -10,6 +10,11 @@ export type ContactType =
   | 'linkedin'
   | 'tiktok'
 
+export type RepeatUnit = 'day' | 'week' | 'month' | 'year'
+
+/** Ogni quanto si ripete il promemoria; null = non si ripete */
+export type Repeat = { n: number; unit: RepeatUnit } | null
+
 export interface Contact {
   id: string
   type: ContactType
@@ -25,10 +30,13 @@ export interface Client {
   contacts: Contact[]
   /** Data promemoria in formato YYYY-MM-DD, '' se assente */
   reminderAt: string
+  reminderEvery: Repeat
   /** Prossima azione da fare */
   nextStep: string
   /** Valore in euro */
   value: number | null
+  /** Il valore si ripete ogni mese (es. fattura mensile) */
+  recurring: boolean
   tags: string[]
   notes: string
   pinned: boolean

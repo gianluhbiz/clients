@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { supabase } from './supabase'
 import type { Client } from './types'
-import { todayISO, uid } from './utils'
+import { nextReminder, todayISO, uid } from './utils'
 
 /** Vecchi dati salvati solo nel browser (prima del login): migrati al primo accesso */
 const LEGACY_KEY = 'clienti:v1'
@@ -22,6 +22,14 @@ const emit = () => listeners.forEach((l) => l())
 function subscribe(l: () => void) {
   listeners.add(l)
   return () => listeners.delete(l)
+}
+
+/** Completa i campi mancanti dei dati salvati con versioni precedenti */
+function normalize(d: Client): Client {
+  const c = { ...emptyClient(), ...d }
+  // Prima esisteva solo "Mensile", che ripeteva il promemoria ogni mese
+  if ((d as Partial<Client>).reminderEvery === undefined && d.recurring) c.reminderEvery = { n: 1, unit: 'month' }
+  return c
 }
 
 const cacheKey = () => `clienti:cache:${userId}`
@@ -81,7 +89,7 @@ async function refresh() {
     return
   }
   if (pending.size || inflight) return
-  setState(data.map((r) => ({ ...emptyClient(), ...(r.data as Client) })))
+  setState(data.map((r) => normalize(r.data as Client)))
   setMeta({ loaded: true })
 }
 
@@ -117,7 +125,7 @@ export async function startSession(id: string) {
   if (userId === id) return
   userId = id
   try {
-    state = JSON.parse(localStorage.getItem(cacheKey()) || '[]') as Client[]
+    state = (JSON.parse(localStorage.getItem(cacheKey()) || '[]') as Client[]).map(normalize)
   } catch {
     state = []
   }
@@ -154,8 +162,10 @@ export function emptyClient(): Client {
     status: 'lead',
     contacts: [],
     reminderAt: '',
+    reminderEvery: null,
     nextStep: '',
     value: null,
+    recurring: false,
     tags: [],
     notes: '',
     pinned: false,
@@ -173,6 +183,12 @@ export const clients = {
     setState(state.map((c) => (c.id === id ? { ...c, ...patch, updatedAt: Date.now() } : c)))
     schedule(id)
   },
+  /** Promemoria fatto: se si ripete passa alla data successiva, altrimenti si cancella */
+  completeReminder(id: string) {
+    const c = state.find((x) => x.id === id)
+    if (!c?.reminderAt) return
+    clients.update(id, { reminderAt: nextReminder(c.reminderAt, c.reminderEvery) })
+  },
   remove(id: string) {
     setState(state.filter((c) => c.id !== id))
     flush(id)
@@ -180,7 +196,7 @@ export const clients = {
   /** Unisce per id: i clienti importati sovrascrivono quelli esistenti */
   merge(list: Client[]) {
     const byId = new Map(state.map((c) => [c.id, c]))
-    for (const c of list) byId.set(c.id, { ...emptyClient(), ...c })
+    for (const c of list) byId.set(c.id, normalize(c))
     setState([...byId.values()])
     for (const c of list) schedule(c.id, 0)
   },

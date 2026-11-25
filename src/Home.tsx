@@ -37,11 +37,13 @@ export default function Home() {
   const today = todayISO()
 
   const counts = useMemo(() => {
-    const c = { all: all.length, lead: 0, attesa: 0, chiuso: 0, perso: 0, due: 0, won: 0 }
+    const c = { all: all.length, lead: 0, attesa: 0, chiuso: 0, perso: 0, due: 0, won: 0, monthly: 0 }
     for (const x of all) {
       c[x.status]++
       if (x.reminderAt && x.reminderAt <= today) c.due++
-      if (x.status === 'chiuso') c.won += x.value ?? 0
+      if (x.recurring) {
+        if (x.status !== 'perso') c.monthly += x.value ?? 0
+      } else if (x.status === 'chiuso') c.won += x.value ?? 0
     }
     return c
   }, [all, today])
@@ -217,6 +219,7 @@ export default function Home() {
           <span>
             {list.length} {list.length === 1 ? 'cliente' : 'clienti'}
             {counts.won > 0 && <span className="text-zinc-400"> · {euro.format(counts.won)} chiusi</span>}
+            {counts.monthly > 0 && <span className="text-zinc-400"> · {euro.format(counts.monthly)}/mese</span>}
           </span>
           <label className="flex items-center gap-1 text-zinc-500">
             <i className="ri-arrow-up-down-line text-zinc-400" />

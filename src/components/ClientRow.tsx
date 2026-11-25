@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { CONTACT, contactHref } from '../lib/meta'
 import { clients } from '../lib/store'
 import type { Client } from '../lib/types'
-import { euro, reminderInfo } from '../lib/utils'
+import { euro, reminderInfo, repeatLabel } from '../lib/utils'
 import { StatusButton } from './Status'
 
 const TONE = {
@@ -43,8 +43,11 @@ export const ClientRow = memo(function ClientRow({ client: c, index, active, onO
         {(r || c.nextStep || c.tags.length > 0) && (
           <div className="mt-0.5 flex items-center gap-2 text-sm text-zinc-500">
             {r && (
-              <span className={`flex shrink-0 items-center gap-1 ${TONE[r.tone]}`}>
-                <i className="ri-alarm-line" />
+              <span
+                title={c.reminderEvery ? `Si ripete ${repeatLabel(c.reminderEvery)}` : undefined}
+                className={`flex shrink-0 items-center gap-1 ${TONE[r.tone]}`}
+              >
+                <i className={c.reminderEvery ? 'ri-repeat-line' : 'ri-alarm-line'} />
                 {r.label}
               </span>
             )}
@@ -62,10 +65,10 @@ export const ClientRow = memo(function ClientRow({ client: c, index, active, onO
       {due && (
         <button
           type="button"
-          title="Fatto: rimuovi promemoria"
+          title={c.reminderEvery ? `Fatto: prossimo ${repeatLabel(c.reminderEvery)}` : 'Fatto: rimuovi promemoria'}
           onClick={(e) => {
             e.stopPropagation()
-            clients.update(c.id, { reminderAt: '' })
+            clients.completeReminder(c.id)
           }}
           className="icon-btn hidden group-hover:grid hover:text-emerald-600"
         >
@@ -92,8 +95,9 @@ export const ClientRow = memo(function ClientRow({ client: c, index, active, onO
         })}
       </div>
 
-      <div className="hidden w-20 shrink-0 text-right text-sm text-zinc-600 tabular-nums sm:block">
+      <div className="hidden w-24 shrink-0 text-right text-sm text-zinc-600 tabular-nums sm:block">
         {c.value != null ? euro.format(c.value) : ''}
+        {c.value != null && c.recurring && <span className="text-zinc-400">/mese</span>}
       </div>
     </div>
   )

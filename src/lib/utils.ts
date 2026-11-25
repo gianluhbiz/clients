@@ -1,3 +1,5 @@
+import type { Repeat, RepeatUnit } from './types'
+
 export const uid = () =>
   Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4)
 
@@ -16,6 +18,42 @@ export function todayISO(offsetDays = 0) {
 export function parseISO(s: string) {
   const [y, m, d] = s.split('-').map(Number)
   return new Date(y, m - 1, d)
+}
+
+/** Aggiunge mesi a una data YYYY-MM-DD; 31 gen + 1 mese = 28/29 feb */
+export function addMonths(s: string, n: number) {
+  const d = parseISO(s)
+  const day = d.getDate()
+  d.setDate(1)
+  d.setMonth(d.getMonth() + n)
+  const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+  d.setDate(Math.min(day, last))
+  return toISO(d)
+}
+
+const UNIT_LABEL: Record<RepeatUnit, [string, string]> = {
+  day: ['giorno', 'giorni'],
+  week: ['settimana', 'settimane'],
+  month: ['mese', 'mesi'],
+  year: ['anno', 'anni'],
+}
+
+export const unitLabel = (unit: RepeatUnit, n: number) => UNIT_LABEL[unit][n === 1 ? 0 : 1]
+
+export function repeatLabel(r: Repeat) {
+  if (!r) return ''
+  return r.n === 1 ? `ogni ${unitLabel(r.unit, 1)}` : `ogni ${r.n} ${unitLabel(r.unit, r.n)}`
+}
+
+/** Prossima data del promemoria dopo averlo segnato fatto ('' se non si ripete) */
+export function nextReminder(at: string, every: Repeat) {
+  if (!at || !every) return ''
+  const n = Math.max(1, every.n)
+  if (every.unit === 'month') return addMonths(at, n)
+  if (every.unit === 'year') return addMonths(at, n * 12)
+  const d = parseISO(at)
+  d.setDate(d.getDate() + n * (every.unit === 'week' ? 7 : 1))
+  return toISO(d)
 }
 
 const dayFmt = new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short' })
