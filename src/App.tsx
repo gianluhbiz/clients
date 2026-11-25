@@ -7,7 +7,7 @@ import { supabase } from './lib/supabase'
 import Login from './Login'
 
 export default function App() {
-  // undefined = sessione ancora in verifica.
+  // undefined = sessione ancora in verifica
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   const userId = session?.user.id
 
